@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Btl" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.Btl" parent="Base.Theme.Btl" />
+
+    <!--  Light theme  -->
+    <style name="LightTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">@color/lightColorPrimary</item>
+        <item name="colorPrimaryDark">@color/lightColorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+<!--        <item name="fontFamily">@font/roboto</item>-->
+<!--        <item name="listBackground">@color/lightListBackground</item>-->
+<!--        <item name="cardBackground">@color/lightCardBackground</item>-->
+<!--        <item name="textColor">@color/lightCardTitle</item>-->
+<!--        <item name="actionBarBackgroundColor">@color/lightColorPrimary</item>-->
+<!--        <item name="dialogTextColor">@color/lightDialogTitle</item>-->
+<!--        <item name="dialogDateColor">@color/dialogDateColor</item>-->
+    </style>
+</resources>

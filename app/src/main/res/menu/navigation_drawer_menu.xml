@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nav_item1"
+        android:title="About Develop" />
+
+    <item
+        android:id="@+id/nav_item2"
+        android:title="Theme Mode"
+        app:actionLayout="@layout/menu_switch_dark_mode" />
+
+    <item
+        android:id="@+id/nav_changeLanguages"
+        android:title="Change Language"
+
+        />
+</menu>

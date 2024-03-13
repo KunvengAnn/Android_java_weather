@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Weather</string>
+
+    <!-- to toggle the open close button of the navigation drawer -->
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+
+    <string name="channel_name">Temperature Channel</string>
+    <string name="channel_description">Channel for temperature notifications</string>
+</resources>
