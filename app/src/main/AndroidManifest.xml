@@ -70,12 +70,12 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".Helper.TemperatureCheckReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
+<!--        <receiver android:name=".Helper.TemperatureCheckReceiver"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
 
         <!--add service can be run on close or can run foreground service.-->
         <service
