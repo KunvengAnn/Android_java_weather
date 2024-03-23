@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ServiceInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -54,7 +55,10 @@ public class TemperatureCheckService extends Service {
 
         // Create and show the notification
         Notification notification = createNotification("Checking temperature...");
+
+        // Start foreground service with appropriate foreground service type based on Android version
         startForeground(NOTIFICATION_ID, notification);
+
 
         // Schedule next execution after a certain interval
         scheduleTemperatureCheck(getApplicationContext());
@@ -63,11 +67,13 @@ public class TemperatureCheckService extends Service {
         return START_STICKY;
     }
 
+
+
     // Create a notification for the service
     private Notification createNotification(String contentText) {
         // Create an intent to open the main activity when notification is tapped
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent intent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
 
         // Build the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -81,6 +87,7 @@ public class TemperatureCheckService extends Service {
         // Return the notification
         return builder.build();
     }
+
 
     // Create the notification channel
     private void createNotificationChannel() {
@@ -104,7 +111,7 @@ public class TemperatureCheckService extends Service {
         // Set up the alarm to trigger every hour
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, TemperatureCheckService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(context, REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getService(context, REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
 
         // Set the alarm to trigger every hour
         long intervalMillis = 60 * 60 * 1000; // 1 hour in milliseconds
@@ -113,6 +120,7 @@ public class TemperatureCheckService extends Service {
 
         makeAPICall(context);
     }
+
 
     public static String getCityName(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -147,9 +155,9 @@ public class TemperatureCheckService extends Service {
                             String formateTempCelsiusMain = df.format(tempCelsius);
 
 //                            if (tempCelsius > 25) {
-                                // Display notification with temperature
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.notify(NOTIFICATION_ID, createNotification("Temperature is " + formateTempCelsiusMain + "°C"));
+                            // Display notification with temperature
+                            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManager.notify(NOTIFICATION_ID, createNotification("Temperature is " + formateTempCelsiusMain + "°C"));
 //                            }
                         }
                     }

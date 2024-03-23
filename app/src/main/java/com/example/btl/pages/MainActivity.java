@@ -77,7 +77,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    
+
     ApiServices apiServices;
     String TADWeather = "Weather";
     private ConnectivityReceiver connectivityReceiver;
@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<String> listHour = new ArrayList<>();
 
     String savedLanguage = null;
+    SwitchCompat switchDarkMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Start the service
         Intent serviceIntent = new Intent(this, TemperatureCheckService.class);
         startService(serviceIntent);
-
 
         // Instantiate the ConnectivityReceiver with the current MainActivity instance
         connectivityReceiver = new ConnectivityReceiver(this);
@@ -272,21 +272,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Get the action view for the menu item (which contains the SwitchCompat)
         View actionView = menuItem.getActionView();
 
-        // Find the SwitchCompat view within the action view
-        SwitchCompat switchDarkMode = actionView.findViewById(R.id.id_switchDarkMode);
-        // Retrieve dark mode state from SharedPreferences
-        boolean isDarkMode = getDarkModePreference();
-        applyTheme(isDarkMode);
-
-        switchDarkMode.setChecked(isDarkMode);
-
-        // Set up dark mode switch listener
-        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            darkModeSwitchToggled = true;
-
-            saveDarkModePreference(isChecked);
-            applyTheme(isChecked);
-        });
 
         TextView textViewNext6Day = findViewById(R.id.id_textviewNext6Day);
         TextView textViewHumidity = findViewById(R.id.id_Humidity);
@@ -300,28 +285,66 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View headerView = navigationView.getHeaderView(0);
 
         // Find the TextView within the header view
-        TextView headerTextViewDrawer  = headerView.findViewById(R.id.id_headerDrawerNavigationView);
+        TextView headerTextViewDrawer = headerView.findViewById(R.id.id_headerDrawerNavigationView);
         TextView textViewNameToolBar = findViewById(R.id.id_nameOfToolBar);
+
 
         // Get the saved language
         savedLanguage = getSelectedLanguage();
 
-        Translate translate = new Translate(rootView, this, R.id.id_searchEditText,textViewNext6Day,textViewHumidity,textViewWind,item1,itemThemeMode,itemChangeLang,headerTextViewDrawer,textViewNameToolBar);
+        Translate translate = new Translate(rootView, this, R.id.id_searchEditText, textViewNext6Day, textViewHumidity, textViewWind, item1, itemThemeMode, itemChangeLang, headerTextViewDrawer, textViewNameToolBar);
         translate.getLanguage();
 
         // from Language Page
         boolean isSelectedFromLangPage = getIntent().getBooleanExtra("isSelected", false);
         if (isSelectedFromLangPage) {
-            if(savedLanguage.equals("vi")){
+            if (savedLanguage.equals("vi")) {
+                boolean isDarkMode = getDarkModePreference();
+                Log.d("isDarkMode", "isDarkMode vi: " + isDarkMode);
+
+                switchDarkMode.setChecked(isDarkMode); // Set initial state
+                applyTheme(isDarkMode);
                 SnackBarC.showSnackbar(rootView, "Vietnamese", Snackbar.LENGTH_LONG);
-            }else{
+            } else {
+                boolean isDarkMode = getDarkModePreference();
+                Log.d("isDarkMode", "isDarkMode en: " + isDarkMode);
+
+                switchDarkMode.setChecked(isDarkMode); // Set initial state
+                applyTheme(isDarkMode);
                 SnackBarC.showSnackbar(rootView, "English", Snackbar.LENGTH_LONG);
             }
         }
 
+        // Find the SwitchCompat view within the action view
+        switchDarkMode = actionView.findViewById(R.id.id_switchDarkMode);
+
+        // Retrieve dark mode state from SharedPreferences
+        boolean isDarkMode = getDarkModePreference();
+        Log.d("check", "isDarkMode: " + isDarkMode);
+
+        // Set the initial state of the switch without triggering the listener
+        switchDarkMode.post(() -> {
+            // Use post() to ensure that the state is set after the view is laid out
+            switchDarkMode.setChecked(isDarkMode); // Set initial state
+            applyTheme(isDarkMode);
+        });
+
+        // Set up dark mode switch listener
+        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            darkModeSwitchToggled = true;
+
+            saveDarkModePreference(isChecked);
+            applyTheme(isChecked);
+        });
+
+
         // Initialize RecyclerView instance
         recyclerView = findViewById(R.id.id_recyclerview);
+        // Call method to set up RecyclerView
+        ShowRecycler();
+
     }
+
     // end OnCreate
     private void ShowRecycler() {
         // Create adapter instance
@@ -358,15 +381,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // get language from sharedPreferences
         savedLanguage = getSelectedLanguage();
-        if(savedLanguage.equals("vi")){
+        if (savedLanguage.equals("vi")) {
             String vietnameseDescription = getVietnameseWeatherDescription(description);
             // Set weather description
             textView_DescirptionMain.setText(vietnameseDescription);
-        }else if(savedLanguage.equals("en")){
+        } else if (savedLanguage.equals("en")) {
             // set with english
             textView_DescirptionMain.setText(description);
         }
-
 
 
         // Format and set wind speed
@@ -391,6 +413,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString("cityName", "");
     }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
@@ -416,10 +439,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void saveDarkModePreference(boolean isDarkMode) {
+        sharedPreferences.getBoolean("dark_mode", false);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("dark_mode", isDarkMode);
         editor.apply();
     }
+
 
     private String getSelectedLanguage() {
         String savedLanguage = sharedPreferences.getString("language", null);
@@ -526,9 +551,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String[] daysOfWeek = null;
 
             //check something for change
-            if (savedLanguage.equals("vi")){
-                 daysOfWeek = Constants.DAYS_OF_WEEK_VIETNAMESE;
-            }else{
+            if (savedLanguage.equals("vi")) {
+                daysOfWeek = Constants.DAYS_OF_WEEK_VIETNAMESE;
+            } else {
                 // Convert day of week to a string representation
                 daysOfWeek = Constants.DAYS_OF_WEEK;
             }
@@ -572,6 +597,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
+
     @Override
     public void onBackPressed() {
         if (editText_cityName.isFocused()) {
@@ -700,12 +726,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unregister the connectivity receiver when the app is destroyed
-        if (connectivityReceiver != null) {
-            unregisterReceiver(connectivityReceiver);
-        }
-
+        // Unregister the connectivity receiver
+        unregisterReceiver(connectivityReceiver);
     }
+
 
     public void checkInternetConnection() {
         // Check for internet OR Wi-Fi connection
